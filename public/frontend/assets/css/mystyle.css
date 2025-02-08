@@ -1,0 +1,101 @@
+/* modal detail product start */
+.myQuatity .qty-box {
+    display: flex;
+    align-items: center;
+    width: 109px;
+    height: 34px;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    background-color: rgba(var(--white), 1);
+}
+[class=dark] .myQuatity .qty-box {
+    background-color: #fff;
+}
+.myQuatity .qty-box .minusBtn,
+.myQuatity .qty-box .plusBtn {
+    border: none;
+    background-color: rgba(var(--white), 1);
+    padding: 0 10px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 17px;
+    height: 100%;
+}
+[class=dark] .myQuatity .qty-box .minusBtn,
+[class=dark] .myQuatity .qty-box .plusBtn {
+    background-color: #fff;
+}
+.myQuatity .qty-box .plusBtn {
+    right: 0;
+}
+[dir=rtl] .myQuatity .qty-box .plusBtn {
+    right: unset;
+    left: 0;
+}
+.myQuatity .qty-box .count {
+    width: inherit;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    color: rgba(var(--theme-color), 1);
+    height: 100%;
+}
+/* modal detail product end */
+
+/* =========================== CSS untuk modal detail product */
+/* Modal keluar dari bawah ke atas */
+.modal-bottom .modal-dialog {
+    margin: 0;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) !important;
+    width: 100%;
+    max-width: 598px; 
+}
+
+.modal-bottom .modal-content {
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-dialog-bottom {
+    margin: 0;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 598px; 
+}
+
+/* Menambahkan jarak dari bawah */
+.modal-bottom .modal-content {
+    margin-top: 10px;
+}
+
+/* Atur backdrop jika modal muncul dari bawah */
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+/* ================= cart header */
+.my-cart-icon {
+    position: relative;
+}
+
+.my-cart-count {
+    position: absolute;
+    top: -4px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 1px 4px;
+    font-size: 12px;
+}
+
+/* product search */
+.product-placeholder {
+    visibility: hidden; /* Sembunyikan placeholder, tapi tetap menggunakan tempat */
+}
