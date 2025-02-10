@@ -55,6 +55,21 @@
                                         Cetak PDF
                                     </a>
                                 @endif
+
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button class="btn btn-primary" type="submit">Tampilkan Laporan</button>
+                                @if(($filter == 'product' && count($products) > 0) || ($filter == 'pendapatan' && count($orders) > 0))
+                                <a href="{{ route('admin.report.excel', [
+                                    'start_date' => $start_date,
+                                    'end_date' => $end_date,
+                                    'filter' => $filter,
+                                    'status' => $status
+                                ]) }}" class="btn btn-info ms-2">
+                                    Cetak Excel
+                                </a>
+                            @endif
+                                
                             </div>
                         </div>
                     </div>

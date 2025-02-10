@@ -36,4 +36,9 @@ class Product extends Model
     {
         return $this->belongsToMany(AttributeValue::class, 'product_attribute_values', 'product_id', 'attribute_value_id');
     }
+    public function getStockAttribute($value)
+    {
+    return $value ?? 0; // Jika stock null, maka dianggap 0
+    }
+
 }

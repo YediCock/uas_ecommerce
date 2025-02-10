@@ -60,6 +60,9 @@ Route::prefix('admin')->middleware(['auth','admin'])->group(function () {
 
     Route::get('/report/pdf', [App\Http\Controllers\Admin\ReportController::class, 'generatePDF'])
     ->name('admin.report.pdf');
+    
+    Route::get('/report/excel', [App\Http\Controllers\Admin\ReportController::class, 'generateExcel'])
+    ->name('admin.report.excel');
 });
 // user
 Route::get('/', '\App\Livewire\User\Home\Home');

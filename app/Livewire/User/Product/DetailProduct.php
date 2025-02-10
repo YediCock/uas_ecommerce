@@ -18,6 +18,8 @@ class DetailProduct extends Component
     public $finalPrice;
     public $action;
     public $quantity = 1;
+    public $cartCount;
+
     public function increaseQuantity()
     {
         $this->quantity++;
@@ -49,26 +51,20 @@ class DetailProduct extends Component
                 'price' => $price,
             ];
         }
+
+        $this->cartCount = $this->getCartCountProperty();
     }
     public function selectAttributeValue($attributeId, $valueId, $price)
     {
-        // Reset semua nilai untuk atribut yang dipilih
         foreach ($this->selectedAttributes[$attributeId] as &$value) {
             $value['checked'] = false;
         }
-
-        // Tandai nilai yang dipilih sebagai aktif
         $this->selectedAttributes[$attributeId][$valueId]['checked'] = true;
-
-        // Perbarui harga akhir
         $this->updateFinalPrice();
     }
     protected function updateFinalPrice()
     {
-        // Set harga dasar dari produk
         $this->finalPrice = $this->price;
-
-        // Tambahkan harga atribut yang dipilih (jika ada)
         foreach ($this->selectedAttributes as $attributeValues) {
             foreach ($attributeValues as $value) {
                 if ($value['checked']) {
@@ -77,15 +73,12 @@ class DetailProduct extends Component
             }
         }
     }
-    // actian tambah keranjang atau beli sekarang
     public function setAction($action)
     {
         $this->action = $action;
     }
-    // Buat metode terpisah untuk validasi dan mengumpulkan atribut
     private function validateAndCollectAttributes()
     {
-        // Validasi: Memastikan semua atribut dipilih
         foreach ($this->selectedAttributes as $attributeId => $values) {
             $isSelected = false;
             foreach ($values as $value) {
@@ -96,11 +89,10 @@ class DetailProduct extends Component
             }
             if (!$isSelected) {
                 $this->alert('error', 'Semua atribut harus dipilih sebelum melanjutkan.');
-                return null; // Return null untuk indikasi error
+                return null;
             }
         }
 
-        // Mengumpulkan atribut yang dipilih
         $attributes = [];
         foreach ($this->selectedAttributes as $attributeId => $values) {
             foreach ($values as $valueId => $value) {
@@ -122,43 +114,29 @@ class DetailProduct extends Component
             }
         }
 
-        return $attributes; // Return attributes jika sukses
+        return $attributes;
     }
-
-// Fungsi addToCart yang memanggil metode validateAndCollectAttributes
     public function addToCart()
     {
         $user = auth()->user();
-
         if (!$user) {
-            // Simpan URL saat ini di session sebelum redirect
             session(['redirect_to_detailProduct' => "/detail-product/{$this->product->id}"]);
             return redirect()->to('/login');
         }
-
-        // Panggil metode validateAndCollectAttributes
         $attributes = $this->validateAndCollectAttributes();
-        
         if (is_null($attributes)) {
-            return back(); // Berhenti jika validasi gagal
+            return back();
         }
-
-        // Encode attributes to JSON
         $attributesJson = json_encode($attributes);
-
-        // Cari apakah sudah ada produk dengan product_id dan atribut yang sama
         $existingCart = ModelCart::where('user_id', $user->id)
             ->where('product_id', $this->product->id)
             ->where('status', 'pending')
             ->where('attributes', $attributesJson)
             ->first();
-
         if ($existingCart) {
-            // Jika sudah ada, update kuantitasnya
             $existingCart->quantity += $this->quantity;
             $existingCart->save();
         } else {
-            // Jika belum ada, tambahkan produk baru ke keranjang
             ModelCart::create([
                 'user_id' => $user->id,
                 'product_id' => $this->product->id,
@@ -167,44 +145,10 @@ class DetailProduct extends Component
                 'attributes' => $attributesJson,
             ]);
         }
+        $this->cartCount = $this->getCartCountProperty();
         $this->alert('success', 'Produk berhasil ditambahkan ke keranjang.');
         return back();
     }
-    // Fungsi buyNow yang memanggil metode validateAndCollectAttributes
-    public function buyNow()
-    {
-        $user = auth()->user();
-
-        if (!$user) {
-            // Simpan URL saat ini di session sebelum redirect
-            session(['redirect_to_detailProduct' => "/detail-product/{$this->product->id}"]);
-            return redirect()->to('/login');
-        }
-
-        // Panggil metode validateAndCollectAttributes
-        $attributes = $this->validateAndCollectAttributes();
-        
-        if (is_null($attributes)) {
-            return back(); // Berhenti jika validasi gagal
-        }
-
-        // Encode attributes to JSON
-        $attributesJson = json_encode($attributes);
-
-        // Hapus semua sesi keranjang belanja
-        session()->forget('cart');
-
-        // Simpan informasi produk ke dalam sesi
-        session()->put('cart', [
-            'product_id' => $this->product->id,
-            'user_id' => $user->id,
-            'quantity' => $this->quantity,
-            'attributes' => $attributesJson,
-        ]);
-        // Arahkan ke halaman checkout
-        return redirect()->route('checkoutProduct', ['userID' => auth()->user()->id]);
-    }
-    // untuk menghitung jumlah item di keranjang
     public function getCartCountProperty()
     {
         $user = auth()->user();
@@ -213,17 +157,13 @@ class DetailProduct extends Component
         }
         return 0;
     }
-    // add wishlist
     public function addWishlist()
     {
         if ($this->product) {
-            // Periksa apakah user sudah wishlist product ini sebelumnya
             $wishlistExists = Wishlist::where('product_id', $this->product->id)
                                     ->where('user_id', auth()->user()->id)
                                     ->exists();
-
             if ($wishlistExists) {
-                // Jika user sudah wishlist product ini sebelumnya, tampilkan pesan error
                 $this->alert('error', 'Sudah ada di daftar wishlist Anda');
                 return back();
             }else{
@@ -235,7 +175,6 @@ class DetailProduct extends Component
                 return back();
             }
         }else {
-            // Penanganan jika $cekUser null (tidak ada data yang ditemukan)
             $this->alert('error', 'Pengguna tidak ditemukan.');
             return back();
         }
